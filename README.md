@@ -38,13 +38,6 @@ tests/
   serve.py              serves the test bench
 ```
 
-## Testing
-
-```
-node --test tests/commands.test.mjs
-python3 tests/serve.py        # then open http://127.0.0.1:8799/tests/harness.html, click "Run all checks"
-```
-
 ## Making the Chrome Web Store zip
 
 ```
