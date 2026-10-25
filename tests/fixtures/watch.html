@@ -1,0 +1,5 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Now playing - VideoTube</title></head>
+<body><h1 id="now"></h1><video id="vid" width="320" height="180"></video>
+<button id="like" aria-label="Like this video">👍</button><a href="results.html">Back to results</a>
+<script>document.getElementById("now").textContent = "Playing video " + new URLSearchParams(location.search).get("v");
+document.getElementById("like").onclick = () => { window.liked = true; };</script></body></html>

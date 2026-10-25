@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Sign up - Example</title>
+<style>body{font:15px sans-serif;margin:16px} label{display:block;margin:10px 0} .menu{cursor:pointer;padding:6px;background:#ddd;display:inline-block}
+.tall{height:1400px}</style></head>
+<body>
+<nav><a href="results.html">Videos</a></nav>
+<h1>Create your account</h1>
+<form id="f" onsubmit="event.preventDefault(); window.submitted = (window.submitted||0)+1;">
+  <label>Name <input id="name" name="name"></label>
+  <input id="email" type="email" placeholder="Email address">
+  <label>Country <select id="country"><option>Choose…</option><option>Canada</option><option>United States</option><option>Mexico</option></select></label>
+  <label><input type="checkbox" id="remember"> Remember me</label>
+  <div role="switch" id="notif" aria-checked="true" tabindex="0" aria-label="Notifications">Notifications</div>
+  <label>Message <textarea id="msg"></textarea></label>
+  <div id="notes" contenteditable="true" aria-label="Notes" style="border:1px solid #999;min-height:40px"></div>
+  <button type="button" id="send">Send</button>
+</form>
+<div class="menu" id="settings">Open settings</div>
+<div class="tall"></div>
+<h2>Pricing</h2><p>Our pricing is simple: free forever.</p>
+<script>
+document.getElementById("send").onclick = () => { window.sent = true; };
+document.getElementById("settings").addEventListener("click", () => { window.settingsOpened = true; });
+document.getElementById("notif").addEventListener("click", (e) => { const el = e.currentTarget; el.setAttribute("aria-checked", el.getAttribute("aria-checked") === "true" ? "false" : "true"); });
+</script>
+</body></html>

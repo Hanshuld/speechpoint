@@ -1,0 +1,6 @@
+# Mac and editor files
+.DS_Store
+.vscode/
+
+# the built zip (make it from extension/ when needed; see README)
+SpeechPoint.zip

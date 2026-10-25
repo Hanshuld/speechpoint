@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Inbox (3) - Mail</title>
+<style>table{border-collapse:collapse;width:100%} tr{cursor:pointer} td{padding:8px;border-bottom:1px solid #ddd}</style></head>
+<body><header><a href="#compose" role="button">Compose</a></header>
+<table role="grid"><tbody>
+<tr role="row" data-id="1"><td><span role="checkbox" aria-checked="false" aria-label="Select" tabindex="0">☐</span></td><td>Sam Lee</td><td>Lunch tomorrow? - Are you free at noon</td></tr>
+<tr role="row" data-id="2"><td><span role="checkbox" aria-checked="false" aria-label="Select" tabindex="0">☐</span></td><td>School Office</td><td>Field trip form - Please sign by Friday</td></tr>
+<tr role="row" data-id="3"><td><span role="checkbox" aria-checked="false" aria-label="Select" tabindex="0">☐</span></td><td>Grandma</td><td>Recipes you asked for</td></tr>
+</tbody></table>
+<script>for (const tr of document.querySelectorAll("tr[role=row]")) tr.addEventListener("click", () => { location.hash = "open-" + tr.dataset.id; });</script>
+</body></html>

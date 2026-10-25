@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpeechPoint</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body data-state="off">
+  <h1><img src="icons/icon128.png" alt="">SpeechPoint</h1>
+  <div class="status" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="state">Starting…</span></div>
+  <div id="heard" aria-live="off"></div>
+  <div id="reply" aria-live="polite">Say what you want to do on the page.</div>
+  <div class="confirm" id="confirm" hidden role="alertdialog" aria-labelledby="confirmText">
+    <p id="confirmText"></p>
+    <div class="row"><button id="yes" class="yes">Yes</button><button id="no">No</button></div>
+  </div>
+  <button id="mic">Start listening</button>
+  <button id="allow" class="second" hidden>Allow microphone</button>
+  <input id="typed" type="text" placeholder="…or type a command and press Enter" aria-label="Type a command">
+  <details open id="things">
+    <summary>Things to say</summary>
+    <ul>
+      <li>“Go to <span class="k">YouTube</span>” · “Search YouTube for piano music”</li>
+      <li>“The second video” · “Click <span class="k">Subscribe</span>” · “Sign in”</li>
+      <li>“<span class="k">Scroll down</span>” · “Go to the top” · “Go back”</li>
+      <li>“Click <span class="k">search</span>” then “Type cute cats” · “Press enter”</li>
+      <li>“<span class="k">New tab</span>” · “Close tab” · “Go to the <span class="k">Gmail tab</span>” · “Tab 2”</li>
+      <li>“<span class="k">Pause</span>” · “<span class="k">Play</span>” · “<span class="k">Mute</span>” · “Zoom in”</li>
+      <li>“Read this page” · “Stop”</li>
+      <li>“Show numbers” then “7” — when you can't name it</li>
+      <li>“<span class="k">Watch</span> funny cat videos” · “Summarize this page”</li>
+      <li>“Go to YouTube <span class="k">and</span> search for cats <span class="k">and</span> play the first video”</li>
+      <li>“Start <span class="k">dictation</span>” — talk freely; “comma”, “new line”, “scratch that”</li>
+      <li>“Email sam@example.com saying I'll be late” · “Spell s a m at gmail dot com”</li>
+      <li>“Copy the link” · “Paste” · “Undo” · “Read more” · “Next page”</li>
+      <li>“Scroll down 3 times” · “Again” · “Full screen”</li>
+      <li>“Go to sleep” · “Wake up” · “Help with typing”</li>
+    </ul>
+  </details>
+  <details class="mine">
+    <summary>My commands</summary>
+    <p class="hint">Your own phrases. Or just say: “when I say homework, go to classroom.google.com”.</p>
+    <p class="hint" id="mineEmpty">None yet.</p>
+    <ul id="mineList"></ul>
+    <input id="minePhrase" type="text" placeholder="When I say… (e.g. homework)" aria-label="Phrase">
+    <input id="mineAction" type="text" placeholder="Do… (e.g. classroom.google.com)" aria-label="What it does">
+    <button id="mineAdd" class="second">Add command</button>
+  </details>
+  <details id="help">
+    <summary>Settings</summary>
+    <label><input type="checkbox" id="wake"> Only listen after “Hey SpeechPoint”</label>
+    <label><input type="checkbox" id="speak" checked> Talk back</label>
+    <label><input type="checkbox" id="captions" checked> Show what I hear on the web page</label>
+  </details>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>

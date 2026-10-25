@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SpeechPoint test bench</title>
+<style>
+  body { margin: 0; display: grid; grid-template-columns: 1fr 380px; height: 100vh; font: 14px sans-serif; }
+  #site { width: 100%; height: 100%; border: 0; border-right: 2px solid #999; }
+  #panelHost { overflow: auto; }
+  #bench { position: fixed; left: 10px; bottom: 10px; z-index: 9; background: #fff; border: 2px solid #888; border-radius: 10px;
+           padding: 8px 10px; max-height: 45vh; overflow: auto; width: min(560px, 60vw); font: 13px/1.4 sans-serif; }
+  #bench .ok { color: #1b7f2a; } #bench .bad { color: #b3261e; font-weight: 700; }
+</style>
+</head>
+<body>
+<iframe id="site" src="fixtures/results.html"></iframe>
+<div id="panelHost"></div>
+<div id="bench"><button id="runAll">Run all checks</button> <span id="score"></span><ol id="rows"></ol></div>
+<script type="module">
+// Stand-ins for Chrome's extension APIs: the panel acts on the page in the frame on the left.
+const site = document.getElementById("site");
+const log = (window.benchLog = []);
+const spoken = (window.spoken = []);
+const store = (window.store = {});
+const pageSrc = await (await fetch("../extension/page.js")).text();
+let muted = false;
+
+function cur() {
+  let url = "about:blank", title = "", status = "loading";
+  try {
+    url = site.contentWindow.location.href;
+    title = site.contentDocument.title;
+    status = site.contentDocument.readyState === "complete" ? "complete" : "loading";
+  } catch (e) { url = window.lastExternal || url; status = "complete"; }
+  return { id: 1, index: 0, windowId: 1, url, title, active: true, status, muted };
+}
+
+function navigate(url) {
+  const local = new URL(url, location.href);
+  if (local.origin === location.origin) site.src = local.href;
+  else { window.lastExternal = url; log.push(["navigate", url]); }
+}
+
+window.chrome = {
+  tabs: {
+    query: async (q) => [cur()],
+    update: async (id, p) => {
+      if (p.url) navigate(p.url);
+      if ("muted" in p) { muted = p.muted; log.push(["muted", p.muted]); }
+      if (p.active) log.push(["activate", id]);
+      return cur();
+    },
+    create: async (p) => { log.push(["newtab", p.url || ""]); return cur(); },
+    remove: async () => log.push(["closetab"]),
+    goBack: async () => site.contentWindow.history.back(),
+    goForward: async () => site.contentWindow.history.forward(),
+    reload: async () => site.contentWindow.location.reload(),
+    getZoom: async () => 1,
+    setZoom: async (id, z) => log.push(["zoom", z]),
+  },
+  scripting: {
+    executeScript: async ({ files, func, args }) => {
+      const w = site.contentWindow;
+      if (files) {
+        if (!w.__speechpoint || w.__speechpoint.version !== 4) w.eval(pageSrc);
+        return [{ result: undefined }];
+      }
+      const f = w.eval("(" + func.toString() + ")");
+      return [{ result: await f(...args) }];
+    },
+  },
+  tts: {
+    speak: (t, o) => { spoken.push(t); setTimeout(() => o && o.onEvent && o.onEvent({ type: "end" }), 0); },
+    stop: () => {},
+  },
+  storage: {
+    local: {
+      get: (keys, cb) => cb({ ...store }),
+      set: (o) => Object.assign(store, o),
+    },
+    onChanged: { addListener: () => {} },
+  },
+  runtime: { getURL: (p) => "../extension/" + p, onMessage: { addListener: () => {} }, sendMessage: async () => {} },
+  windows: {
+    getCurrent: async () => ({ id: 1 }),
+    update: async (id, p) => log.push(["window", p.state]),
+    create: async () => log.push(["newwindow"]),
+  },
+  sessions: { restore: async () => log.push(["reopen"]) },
+  bookmarks: {
+    search: async (q) => (window.bookmarks || []).filter((b) => b.title.toLowerCase().includes(q.toLowerCase())),
+    create: async (b) => { log.push(["bookmark", b.url]); return b; },
+  },
+};
+// a scripted stand-in for Chrome's built-in AI: window.aiScript holds the answers (objects, or functions of the prompt)
+window.aiScript = [];
+const fakeSession = {
+  clone: async () => fakeSession,
+  prompt: async (text) => {
+    const next = window.aiScript.shift() || { action: "none" };
+    return JSON.stringify(typeof next === "function" ? next(text) : next);
+  },
+  destroy: () => {},
+};
+window.LanguageModel = {
+  availability: async () => (window.aiScript.length ? "available" : "unavailable"),
+  create: async () => fakeSession,
+};
+// no microphone here: commands are typed
+window.SpeechRecognition = undefined;
+window.webkitSpeechRecognition = undefined;
+
+const html = await (await fetch("../extension/panel.html")).text();
+const doc = new DOMParser().parseFromString(html, "text/html");
+for (const link of doc.querySelectorAll("link[rel=stylesheet]")) {
+  link.href = "../extension/" + link.getAttribute("href");
+  document.head.append(link);
+}
+doc.querySelectorAll("script").forEach((s) => s.remove());
+document.getElementById("panelHost").innerHTML = doc.body.innerHTML;
+document.body.dataset.state = "off";
+await import("../extension/panel.js");
+
+// one command, as if spoken; resolves when SpeechPoint is done (and the page has settled)
+window.say = async (text, settle = 600) => {
+  spoken.length = 0;
+  log.length = 0;
+  speechpointTest.heard(text);
+  await speechpointTest.idle();
+  await new Promise((r) => setTimeout(r, settle));
+  return { said: spoken.slice(), log: log.slice(), url: cur().url.replace(location.origin, ""),
+           reply: document.getElementById("reply").textContent };
+};
+window.load = (name) => new Promise((r) => { site.onload = () => setTimeout(r, 150); site.src = "fixtures/" + name; });
+window.siteWin = () => site.contentWindow;
+window.benchReady = true;
+
+const { runAll } = await import("./checks.js");
+window.runAllChecks = async () => {
+  const rows = document.getElementById("rows");
+  rows.textContent = "";
+  const results = await runAll((row) => {
+    const li = document.createElement("li");
+    li.className = row.ok ? "ok" : "bad";
+    li.textContent = `${row.ok ? "✔" : "✘"} “${row.said}”${row.note ? " (" + row.note + ")" : ""}${row.ok ? "" : " → " + row.reply}`;
+    rows.append(li);
+  });
+  const passed = results.filter((r) => r.ok).length;
+  document.getElementById("score").textContent = `${passed} / ${results.length} passed`;
+  return { passed, total: results.length, failed: results.filter((r) => !r.ok) };
+};
+document.getElementById("runAll").onclick = () => window.runAllChecks();
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome to SpeechPoint</title>
+<style>
+  @import url("fonts/fonts.css");
+  :root { --paper: #f3f1e7; --ink: #1c1c1c; --soft: #4f4f4f; --key: #1d3577; --shadow: 6px 6px 0 rgba(0,0,0,.22);
+          --pixel: "Pixelify Sans", monospace; --screen: "VT323", monospace; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); font: 23px/1.15 var(--screen);
+         background: var(--paper) repeating-linear-gradient(0deg, rgba(0,0,0,.03) 0 2px, transparent 2px 4px); }
+  main { max-width: 660px; margin: 0 auto; padding: 48px 20px 64px; }
+  h1 { display: flex; align-items: center; gap: 14px; font: 700 36px var(--pixel); margin: 0 0 10px; }
+  h1 img { width: 48px; height: 48px; image-rendering: pixelated; filter: saturate(.8) brightness(.7); border: 4px solid var(--ink); }
+  .lead { color: var(--soft); margin: 0 0 30px; }
+  .step { border: 4px solid var(--ink); box-shadow: var(--shadow); background: #fffdf5; padding: 16px 20px; margin: 0 0 22px; }
+  .step h2 { font: 700 22px var(--pixel); margin: 0 0 8px; display: flex; align-items: center; gap: 10px; }
+  .step p { margin: 6px 0; }
+  .num { display: inline-grid; place-items: center; width: 30px; height: 30px; font: 700 18px var(--pixel);
+         background: linear-gradient(#e2e2df, #a2a29f); border: 3px solid var(--ink); }
+  .ok { color: #2e7d32; } .bad { color: #a12020; }
+  .ok, .bad { font-family: var(--pixel); font-weight: 700; font-size: 19px; }
+  button { font: 700 18px var(--pixel); color: var(--ink); cursor: pointer; padding: 8px 18px; margin-top: 10px;
+           border: 3px solid var(--ink); border-radius: 0; box-shadow: 4px 4px 0 rgba(0,0,0,.22);
+           background: linear-gradient(#e2e2df, #bdbdba 50%, #a2a29f); }
+  button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(0,0,0,.22); }
+  kbd { font: 700 16px var(--pixel); padding: 0 7px; border: 3px solid var(--ink); background: #fff; }
+  ul { padding-left: 22px; margin: 8px 0; } li { margin: 6px 0; } .k { color: var(--key); }
+  :focus-visible { outline: 3px solid var(--key); outline-offset: 2px; }
+  @media (max-width: 480px) { body { font-size: 20px; } h1 { font-size: 28px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1><img src="icons/icon128.png" alt="">Welcome to SpeechPoint</h1>
+  <p class="lead">Use Chrome with your voice. Open sites, click, type, scroll and read — hands-free.</p>
+
+  <section class="step">
+    <h2><span class="num">1</span>Let SpeechPoint hear you</h2>
+    <p id="mic" aria-live="polite">Chrome is asking for the microphone — click <b>Allow</b>.</p>
+    <button id="again" hidden>Ask again</button>
+  </section>
+
+  <section class="step">
+    <h2><span class="num">2</span>Open the SpeechPoint panel</h2>
+    <p>Click the SpeechPoint icon in Chrome's toolbar, or press <kbd id="keys">Option</kbd> + <kbd>S</kbd>.</p>
+    <p>Tip: click the puzzle piece in the toolbar and pin SpeechPoint so it's always there.</p>
+  </section>
+
+  <section class="step">
+    <h2><span class="num">3</span>Just talk</h2>
+    <ul>
+      <li>“Go to <span class="k">YouTube</span>” · “<span class="k">Watch</span> funny cat videos” · “Pause”</li>
+      <li>“Click <span class="k">Sign in</span>” · “The second result” · “Scroll down”</li>
+      <li>“Click search” then “Type pizza near me” · “Press enter”</li>
+      <li>“Start <span class="k">dictation</span>” to write emails and messages by talking</li>
+      <li>“Show numbers” then a number, for anything without a name</li>
+      <li>“When I say homework, go to classroom.google.com” — your own shortcuts</li>
+      <li>“Help” anytime</li>
+    </ul>
+    <p>SpeechPoint asks before pressing Send, Buy, Delete and similar buttons.</p>
+  </section>
+</main>
+<script src="welcome.js"></script>
+</body>
+</html>
